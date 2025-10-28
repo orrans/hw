@@ -41,8 +41,26 @@ function onSwapBallsProperties() {
     ball2.innerText = ball1Size
 }
 
-function onChangeBGColor(){
+function onChangeBGColor() {
     var randomColor = getRandomColor()
     document.body.style.backgroundColor = randomColor
+}
 
+function onReduceBallsDiameter() {
+    if (isAnimating) return
+    isAnimating = true
+
+    var elBalls = document.querySelectorAll('.balls > .ball')
+
+    elBalls.forEach((ball) => {
+        var currSize = parseInt(getComputedStyle(ball).width)
+        var reduceBy = getRandomNumInclusive(20, 60)
+        var newSize = Math.max(100, currSize - reduceBy)
+        ball.style.width = newSize + 'px'
+        ball.style.height = newSize + 'px'
+        ball.innerText = newSize
+    })
+    setTimeout(() => {
+        isAnimating = false
+    }, 500)
 }
