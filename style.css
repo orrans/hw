@@ -6,15 +6,17 @@ h1 {
     color: white;
 }
 
-.ball{
+.ball {
     width: 100px;
     height: 100px;
     margin: auto;
     border-radius: 50%;
     background-color: red;
     text-align: center;
-    vertical-align: middle;
-    line-height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    
+    font-size: 22px;
+    font-weight: bold;
 }
