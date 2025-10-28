@@ -1,4 +1,6 @@
 let isAnimating = false
+const BALLS_INIT_SIZE = 100
+const BALLS_INIT_COLOR = 'red'
 
 function onBallClick(elBall, maxDiameter) {
     if (isAnimating) return
@@ -10,7 +12,7 @@ function onBallClick(elBall, maxDiameter) {
 
     currSize += randomSize
 
-    if (currSize >= maxDiameter) currSize = 100
+    if (currSize >= maxDiameter) currSize = BALLS_INIT_SIZE
 
     elBall.style.width = currSize + 'px'
     elBall.style.height = currSize + 'px'
@@ -55,7 +57,7 @@ function onReduceBallsDiameter() {
     elBalls.forEach((ball) => {
         var currSize = parseInt(getComputedStyle(ball).width)
         var reduceBy = getRandomNumInclusive(20, 60)
-        var newSize = Math.max(100, currSize - reduceBy)
+        var newSize = Math.max(BALLS_INIT_SIZE, currSize - reduceBy)
         ball.style.width = newSize + 'px'
         ball.style.height = newSize + 'px'
         ball.innerText = newSize
@@ -63,4 +65,15 @@ function onReduceBallsDiameter() {
     setTimeout(() => {
         isAnimating = false
     }, 500)
+}
+
+function onResetGame() {
+    var elBalls = document.querySelectorAll('.balls > .ball')
+
+    elBalls.forEach((ball) => {
+        ball.style.width = BALLS_INIT_SIZE + 'px'
+        ball.style.height = BALLS_INIT_SIZE + 'px'
+        ball.style.backgroundColor = BALLS_INIT_COLOR
+        ball.innerText = BALLS_INIT_SIZE
+    })
 }
