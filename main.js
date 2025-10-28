@@ -1,4 +1,7 @@
 let isAnimating = false
+let hoverTimer
+let autoClickInterval
+
 const BALLS_INIT_SIZE = 100
 const BALLS_INIT_COLOR = 'red'
 
@@ -76,4 +79,39 @@ function onResetGame() {
         ball.style.backgroundColor = BALLS_INIT_COLOR
         ball.innerText = BALLS_INIT_SIZE
     })
+}
+
+function onBall6HoverStart() {
+    var elBall = document.querySelector('.ball6')
+
+    hoverTimer = setTimeout(() => {
+        elBall.style.backgroundColor = 'white'
+        elBall.style.color = 'black'
+        autoClickInterval = setInterval(() => {
+            const balls = document.querySelectorAll('.balls > .ball')
+
+            onBallClick(balls[0], 400)
+
+            setTimeout(() => {
+                onBallClick(balls[1], 500)
+            }, 500)
+
+            setTimeout(() => {
+                onSwapBallsProperties()
+            }, 1000)
+
+            setTimeout(() => {
+                onReduceBallsDiameter()
+            }, 1500)
+        }, 2000)
+    }, 2000)
+}
+
+function onBall6HoverEnd() {
+    var elBall = document.querySelector('.ball6')
+
+    clearTimeout(hoverTimer)
+    clearInterval(autoClickInterval)
+    elBall.style.backgroundColor = 'rgb(11, 146, 164)'
+    elBall.style.color = 'white'
 }
