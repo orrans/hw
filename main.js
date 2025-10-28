@@ -22,3 +22,21 @@ function onBallClick(elBall, maxDiameter) {
         isAnimating = false
     }, 500)
 }
+
+function onSwapBallsProperties() {
+    var elBalls = document.querySelectorAll('.balls > .ball')
+    var ball1 = elBalls[0]
+    var ball2 = elBalls[1]
+    var ball1Size = parseInt(getComputedStyle(ball1).width)
+    var ball1Color = ball1.style.backgroundColor
+
+    ball1.style.width = parseInt(getComputedStyle(ball2).width) + 'px'
+    ball1.style.height = parseInt(getComputedStyle(ball2).width) + 'px'
+    ball2.style.width = ball1Size + 'px'
+    ball2.style.height = ball1Size + 'px'
+
+    ball1.style.backgroundColor = ball2.style.backgroundColor
+    ball2.style.backgroundColor = ball1Color
+    ball1.innerText = parseInt(ball1.style.width)
+    ball2.innerText = ball1Size
+}
