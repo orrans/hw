@@ -40,3 +40,9 @@ function onSwapBallsProperties() {
     ball1.innerText = parseInt(ball1.style.width)
     ball2.innerText = ball1Size
 }
+
+function onChangeBGColor(){
+    var randomColor = getRandomColor()
+    document.body.style.backgroundColor = randomColor
+
+}
