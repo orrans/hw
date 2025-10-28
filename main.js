@@ -4,6 +4,8 @@ let autoClickInterval
 let undoArray = []
 let redoArray = []
 let actionsCounter
+var gTimerInterval
+let elTimer = document.querySelector('.timer')
 
 const BALLS_INIT_SIZE = 100
 const BALLS_INIT_COLOR = 'red'
@@ -15,6 +17,7 @@ const gElRedoBtn = document.querySelector('.redo')
 
 function onInit() {
     actionsCounter = 0
+    clearInterval(gTimerInterval)
     document.title = `Moves: ${actionsCounter}`
     gElBall1.style.width = BALLS_INIT_SIZE + 'px'
     gElBall1.style.height = BALLS_INIT_SIZE + 'px'
@@ -30,7 +33,9 @@ function onInit() {
 }
 
 function onBallClick(elBall, maxDiameter) {
+    if (!gTimerInterval) StartTimer()
     if (isAnimating) return
+
     actionsCounter++
     isAnimating = true
 
@@ -56,6 +61,7 @@ function onBallClick(elBall, maxDiameter) {
 }
 
 function onSwapBallsProperties() {
+    if (!gTimerInterval) StartTimer()
     actionsCounter++
 
     var elBalls = document.querySelectorAll('.balls > .ball')
@@ -78,6 +84,7 @@ function onSwapBallsProperties() {
 }
 
 function onChangeBGColor() {
+    if (!gTimerInterval) StartTimer()
     actionsCounter++
 
     var randomColor = getRandomColor()
@@ -87,9 +94,10 @@ function onChangeBGColor() {
 }
 
 function onReduceBallsDiameter() {
-    actionsCounter++
-
+    if (!gTimerInterval) StartTimer()
     if (isAnimating) return
+
+    actionsCounter++
     isAnimating = true
 
     var elBalls = document.querySelectorAll('.balls > .ball')
@@ -132,6 +140,7 @@ function onBall6HoverStart() {
         elBall.style.color = 'black'
         autoClickInterval = setInterval(() => {
             const balls = document.querySelectorAll('.balls > .ball')
+            if (!gTimerInterval) StartTimer()
 
             onBallClick(balls[0], 400)
             actionsCounter++
@@ -234,4 +243,11 @@ function onRedo() {
     updateButtonStates()
 }
 
-
+function StartTimer() {
+    const startTime = Date.now()
+    gTimerInterval = setInterval(() => {
+        const currTime = Date.now()
+        elTimer.innerText = Math.floor((currTime - startTime) / 1000 + 1)
+        document.title = actionsCounter
+    })
+}
