@@ -17,7 +17,8 @@ const gElRedoBtn = document.querySelector('.redo')
 
 function onInit() {
     actionsCounter = 0
-    clearInterval(gTimerInterval)
+    cancelAnimationFrame(gTimerInterval)
+
     document.title = `Moves: ${actionsCounter}`
     gElBall1.style.width = BALLS_INIT_SIZE + 'px'
     gElBall1.style.height = BALLS_INIT_SIZE + 'px'
@@ -244,10 +245,15 @@ function onRedo() {
 }
 
 function StartTimer() {
-    const startTime = Date.now()
-    gTimerInterval = setInterval(() => {
-        const currTime = Date.now()
-        elTimer.innerText = Math.floor((currTime - startTime) / 1000 + 1)
-        document.title = actionsCounter
-    })
+    const startTime = performance.now()
+
+    function updateTimer(currentTime) {
+        const elapsedSeconds = Math.floor((currentTime - startTime) / 1000 + 1)
+        elTimer.innerText = elapsedSeconds
+        document.title = `Moves: ${actionsCounter}`
+
+        gTimerInterval = requestAnimationFrame(updateTimer)
+    }
+
+    gTimerInterval = requestAnimationFrame(updateTimer)
 }
