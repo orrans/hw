@@ -1,12 +1,37 @@
 let isAnimating = false
 let hoverTimer
 let autoClickInterval
+let undoArray = []
+let redoArray = []
+let actionsCounter
 
 const BALLS_INIT_SIZE = 100
 const BALLS_INIT_COLOR = 'red'
+const gElBall1 = document.querySelector('.ball1')
+const gElBall2 = document.querySelector('.ball2')
+const gElBody = document.body
+const gElUndoBtn = document.querySelector('.undo')
+const gElRedoBtn = document.querySelector('.redo')
+
+function onInit() {
+    actionsCounter = 0
+    document.title = `Moves: ${actionsCounter}`
+    gElBall1.style.width = BALLS_INIT_SIZE + 'px'
+    gElBall1.style.height = BALLS_INIT_SIZE + 'px'
+    gElBall1.style.backgroundColor = BALLS_INIT_COLOR
+    gElBall1.innerText = BALLS_INIT_SIZE
+
+    gElBall2.style.width = BALLS_INIT_SIZE + 'px'
+    gElBall2.style.height = BALLS_INIT_SIZE + 'px'
+    gElBall2.style.backgroundColor = BALLS_INIT_COLOR
+    gElBall2.innerText = BALLS_INIT_SIZE
+
+    saveState(true)
+}
 
 function onBallClick(elBall, maxDiameter) {
     if (isAnimating) return
+    actionsCounter++
     isAnimating = true
 
     var currSize = parseInt(getComputedStyle(elBall).width)
@@ -23,12 +48,16 @@ function onBallClick(elBall, maxDiameter) {
 
     elBall.textContent = currSize
 
+    saveState()
+
     setTimeout(() => {
         isAnimating = false
     }, 500)
 }
 
 function onSwapBallsProperties() {
+    actionsCounter++
+
     var elBalls = document.querySelectorAll('.balls > .ball')
     var ball1 = elBalls[0]
     var ball2 = elBalls[1]
@@ -44,14 +73,22 @@ function onSwapBallsProperties() {
     ball2.style.backgroundColor = ball1Color
     ball1.innerText = parseInt(ball1.style.width)
     ball2.innerText = ball1Size
+
+    saveState()
 }
 
 function onChangeBGColor() {
+    actionsCounter++
+
     var randomColor = getRandomColor()
     document.body.style.backgroundColor = randomColor
+
+    saveState()
 }
 
 function onReduceBallsDiameter() {
+    actionsCounter++
+
     if (isAnimating) return
     isAnimating = true
 
@@ -65,12 +102,17 @@ function onReduceBallsDiameter() {
         ball.style.height = newSize + 'px'
         ball.innerText = newSize
     })
+
+    saveState()
+
     setTimeout(() => {
         isAnimating = false
     }, 500)
 }
 
 function onResetGame() {
+    actionsCounter++
+
     var elBalls = document.querySelectorAll('.balls > .ball')
 
     elBalls.forEach((ball) => {
@@ -79,6 +121,7 @@ function onResetGame() {
         ball.style.backgroundColor = BALLS_INIT_COLOR
         ball.innerText = BALLS_INIT_SIZE
     })
+    saveState()
 }
 
 function onBall6HoverStart() {
@@ -91,16 +134,20 @@ function onBall6HoverStart() {
             const balls = document.querySelectorAll('.balls > .ball')
 
             onBallClick(balls[0], 400)
+            actionsCounter++
 
             setTimeout(() => {
+                actionsCounter++
                 onBallClick(balls[1], 500)
             }, 500)
 
             setTimeout(() => {
+                actionsCounter++
                 onSwapBallsProperties()
             }, 1000)
 
             setTimeout(() => {
+                actionsCounter++
                 onReduceBallsDiameter()
             }, 1500)
         }, 2000)
@@ -115,3 +162,76 @@ function onBall6HoverEnd() {
     elBall.style.backgroundColor = 'rgb(11, 146, 164)'
     elBall.style.color = 'white'
 }
+
+function getGameState() {
+    return {
+        ball1: {
+            backgroundColor: gElBall1.style.backgroundColor,
+            text: gElBall1.innerText, // will use it also for the size
+        },
+        ball2: {
+            backgroundColor: gElBall2.style.backgroundColor,
+            text: gElBall2.innerText, // will use it also for the size
+        },
+        body: {
+            backgroundColor: gElBody.style.backgroundColor,
+        },
+    }
+}
+
+function applyState(state) {
+    gElBall1.style.width = state.ball1.text + 'px'
+    gElBall1.style.height = state.ball1.text + 'px'
+    gElBall1.style.backgroundColor = state.ball1.backgroundColor
+    gElBall1.innerText = state.ball1.text
+
+    gElBall2.style.width = state.ball2.text + 'px'
+    gElBall2.style.height = state.ball2.text + 'px'
+    gElBall2.style.backgroundColor = state.ball2.backgroundColor
+    gElBall2.innerText = state.ball2.text
+
+    gElBody.style.backgroundColor = state.body.backgroundColor
+}
+
+function updateButtonStates() {
+    gElUndoBtn.disabled = undoArray.length <= 1
+    gElRedoBtn.disabled = redoArray.length === 0
+}
+
+function saveState(isInit = false) {
+    if (!isInit) redoArray = []
+
+    const currentState = getGameState()
+    undoArray.push(currentState)
+
+    updateButtonStates()
+}
+
+function onUndo() {
+    actionsCounter++
+
+    if (undoArray.length <= 1) return
+
+    const currentState = undoArray.pop()
+    redoArray.push(currentState)
+
+    const prevState = undoArray[undoArray.length - 1]
+
+    applyState(prevState)
+    updateButtonStates()
+}
+
+function onRedo() {
+    actionsCounter++
+
+    if (redoArray.length === 0) return
+
+    const nextState = redoArray.pop()
+
+    applyState(nextState)
+
+    undoArray.push(nextState)
+    updateButtonStates()
+}
+
+
